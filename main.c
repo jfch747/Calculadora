@@ -1,8 +1,9 @@
 
 
 #define FCY 4000000
-#include <stdio.h> 
-#include <string.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <libpic30.h>
 #include "config.h"
 #include "lcd.h"
@@ -52,12 +53,14 @@ void main(){
     char n_2 [15] = "";
     char op_1 []= "                ";
     int n_1_r = 0;
+    int n_2_r =0;
+    int r = 0;
     int j = 0;
-    int k = 0;
-    int g = 0;
     char op;
     int b_op = 0;
-    int b_r = 0;
+    char res [] = "                ";
+    char resultado []= "                ";
+    
     system_init();
     /*CONFIGURACION INICIAL DE LCD*/
     LCD_Initialize(); //Preder, configurar a 4 bits
@@ -82,12 +85,17 @@ void main(){
                 LCDPutStr(op_1);
                 LCDGoto(0,0);
                 b_op = 2;
-                }
+            }
             else if (b_op == 2){
                 LCDPutStr(n_2);
                 LCDGoto(0,0);
+                b_op = 3;
             }
+            else if (b_op == 3){
+                LCDPutStr(res);
+                LCDGoto(0,0);
             }
+        }
         
         NUM = 'A';
         
@@ -141,11 +149,14 @@ void main(){
             }
             
             if(PORTAbits.RA3==1) {
-                NUM='/';
-                op_1[0]= '/';
+                NUM = '/';
+                op_1[0] = '/';
                 b_op = 1;
-                i=0;
+                op = '/';
+                i = 0;
+                n_2[0] = '1';
             }
+         
          __delay_ms(30);
          
          PORTB=PORTB<<1;
@@ -186,6 +197,7 @@ void main(){
                 NUM='x';
                 op_1[0] ='x';
                 b_op = 1;
+                op='x';
                 i=0;
             }
          __delay_ms(30);
@@ -228,12 +240,20 @@ void main(){
                 NUM='-';
                 op_1[0]= '-';
                 b_op = 1;
+                op = '-';
                 i=0;
             }
          __delay_ms(30);
          PORTB=PORTB<<1;
             if(PORTAbits.RA0==1) {
                 DisplayClr();
+                NUM = 'A';
+                for (j = 0; j == 15; j++){
+                    n_1[j] = " ";
+                    n_2[j] = " ";                  
+                }
+                op_1[0] = ' ';
+                b_op = 0;
                 i = 0;
             }
             if(PORTAbits.RA1==1) {
@@ -249,22 +269,44 @@ void main(){
             }
             if(PORTAbits.RA2==1) {
                 NUM='=';
-                i++;
+                b_op = 3;
             }
             if(PORTAbits.RA3==1) {
                 NUM='+';
                 op_1[0]= '+';
                 b_op = 1;
+                op= '+';
                 i=0;
             }
-         __delay_ms(30);         
-         
-                
+         __delay_ms(30);  
          
          // guarda numeros
-         for (j = i; j==0; j--){
-             n_1_r = n_1_r +(n_1[i]*pow(10,k));
-             k++;
+         n_1_r = atoi(n_1);
+         n_2_r = atoi (n_2);
+         
+         
+         switch (op) {
+            case '+':
+                r = n_1_r + n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case '-':
+                r = n_1_r - n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case 'x':
+                r = n_1_r * n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case '/':
+                r = n_1_r / n_2_r;
+                sprintf(res, "%d", r);
+                break;
+        }
+        
          }
+    
     }
-}
