@@ -52,12 +52,16 @@ void main(){
     char n_2 [15] = "";
     char op_1 []= "                ";
     int n_1_r = 0;
+    int n_2_r =0;
+    int r = 0;
     int j = 0;
     int k = 0;
     int g = 0;
     char op;
     int b_op = 0;
     int b_r = 0;
+    char res [15] = "";
+    
     system_init();
     /*CONFIGURACION INICIAL DE LCD*/
     LCD_Initialize(); //Preder, configurar a 4 bits
@@ -82,12 +86,17 @@ void main(){
                 LCDPutStr(op_1);
                 LCDGoto(0,0);
                 b_op = 2;
-                }
+            }
             else if (b_op == 2){
                 LCDPutStr(n_2);
                 LCDGoto(0,0);
+                b_op = 3;
             }
+            else if (b_op == 3){
+                LCDPutStr(res);
+                LCDGoto(0,0);
             }
+        }
         
         NUM = 'A';
         
@@ -249,7 +258,7 @@ void main(){
             }
             if(PORTAbits.RA2==1) {
                 NUM='=';
-                i++;
+                b_op = 3;
             }
             if(PORTAbits.RA3==1) {
                 NUM='+';
@@ -260,11 +269,42 @@ void main(){
          __delay_ms(30);         
          
                 
-         
          // guarda numeros
+         if (b_op == 0){
          for (j = i; j==0; j--){
              n_1_r = n_1_r +(n_1[i]*pow(10,k));
              k++;
          }
+         }
+         else {
+             k=0;
+             for (j = i; j==0; j--){
+             n_2_r = n_2_r +(n_2[i]*pow(10,k));
+             k++;
+             }
+         }
+         
+         switch (op) {
+            case '+':
+                r = n_1_r + n_2_r;
+                return r;
+            case '-':
+                r = n_1_r - n_2_r;
+                return r;
+            case 'x':
+                r = n_1_r * n_2_r;
+                return r;
+            case '/':
+                r = n_1_r / n_2_r;
+                return r;
+        }
+        
+        
+       
+         
+         
+        sprintf(res, "%d", r);
+
+         }
+    
     }
-}
