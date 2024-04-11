@@ -1,11 +1,13 @@
 
 
 #define FCY 4000000
-#include <stdio.h> 
-#include <string.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <libpic30.h>
 #include "config.h"
 #include "lcd.h"
+#include <math.h>
 
 
 void system_init(){
@@ -45,15 +47,20 @@ void system_init(){
 void main(){
     //Declaracion de variables
     int LCD_AUXILIAR=0;
-    char NUM= '&';
+    char NUM= 'A';
     int i = 0;
     char n_1 [15] = "";
     char n_2 [15] = "";
+    char op_1 []= "                ";
     int n_1_r = 0;
+    int n_2_r =0;
+    int r = 0;
     int j = 0;
-    int k = 0;
-    int g = 0;
     char op;
+    int b_op = 0;
+    char res [] = "                ";
+    char resultado []= "                ";
+    
     system_init();
     /*CONFIGURACION INICIAL DE LCD*/
     LCD_Initialize(); //Preder, configurar a 4 bits
@@ -70,10 +77,27 @@ void main(){
 //        NUM='&';
 
         if(NUM != 'A'){
-            LCDPutStr(n_1);
-            LCDGoto(i,0);
+            if (b_op == 0){
+                LCDPutStr(n_1);
+                LCDGoto(0,0);
+            }
+            else if (b_op == 1){
+                LCDPutStr(op_1);
+                LCDGoto(0,0);
+                b_op = 2;
+            }
+            else if (b_op == 2){
+                LCDPutStr(n_2);
+                LCDGoto(0,0);
+                b_op = 3;
+            }
+            else if (b_op == 3){
+                LCDPutStr(res);
+                LCDGoto(0,0);
+            }
         }
-        NUM='A';        
+        
+        NUM = 'A';
         
         
         
@@ -89,120 +113,200 @@ void main(){
          LCD_AUXILIAR=LCD_PORT;
          //Rutina de salida del teclado
          PORTB=0x100;
+         
             if(PORTAbits.RA0==1) {
                 NUM='7';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA1==1) {
                 NUM='8';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA2==1) {
                 NUM='9';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             
             if(PORTAbits.RA3==1) {
-                NUM='/';
-                op= '/';
-                i++;
+                NUM = '/';
+                op_1[0] = '/';
+                b_op = 1;
+                op = '/';
+                i = 0;
+                n_2[0] = '1';
             }
-         __delay_ms(30);
+         
+         __delay_ms(5);
          
          PORTB=PORTB<<1;
             if(PORTAbits.RA0==1) {
                 NUM='4';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA1==1) {
                 NUM='5';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA2==1) {
                 NUM='6';
-                n_1_r [i] = NUM;
-                i++;        
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }       
             }
             if(PORTAbits.RA3==1) {
                 NUM='x';
-                op ='x';
-                i++;
+                op_1[0] ='x';
+                b_op = 1;
+                op='x';
+                i=0;
             }
-         __delay_ms(30);
+         __delay_ms(5);
          
          PORTB=PORTB<<1;
             if(PORTAbits.RA0==1) {
                 NUM='1';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA1==1) {
                 NUM='2';
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA2==1) {
                 NUM='3';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA3==1) {
                 NUM='-';
-                op= '-';
-                i++;
+                op_1[0]= '-';
+                b_op = 1;
+                op = '-';
+                i=0;
             }
-         __delay_ms(30);
+         __delay_ms(5);
          PORTB=PORTB<<1;
             if(PORTAbits.RA0==1) {
                 DisplayClr();
+                NUM = 'A';
+                for (j = 0; j == 15; j++){
+                    n_1[j] = " ";
+                    n_2[j] = " ";                  
+                }
+                op_1[0] = ' ';
+                b_op = 0;
                 i = 0;
             }
             if(PORTAbits.RA1==1) {
                 NUM='0';
-                n_1_r [i] = NUM;
-                i++;
+                if (b_op == 0){
+                    n_1[i] = NUM;
+                    i++;
+                }
+                else {
+                    n_2[i] = NUM;
+                    i++;
+                }
             }
             if(PORTAbits.RA2==1) {
                 NUM='=';
-                n_1_r [i] = NUM;
-                i++;
+                b_op = 3;
             }
             if(PORTAbits.RA3==1) {
                 NUM='+';
+                op_1[0]= '+';
+                b_op = 1;
                 op= '+';
-                i++;
+                i=0;
             }
-         __delay_ms(30);
-         
-        
-         
-         
-         
-         // agregar a string
-         
-         for (g = 0; g == i; g++){
-             n_1 [g] = NUM;
-         }
+         __delay_ms(5);  
          
          // guarda numeros
-         for (j = i; j==0; j--){
-             n_1_r = n_1_r +(n_1[i]*(10^k));
-             k++;
+         n_1_r = atoi(n_1);
+         n_2_r = atoi (n_2);
+         
+         
+         switch (op) {
+            case '+':
+                r = n_1_r + n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case '-':
+                r = n_1_r - n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case 'x':
+                r = n_1_r * n_2_r;
+                sprintf(res, "%d", r);
+                break;
+                
+            case '/':
+                r = n_1_r / n_2_r;
+                sprintf(res, "%d", r);
+                break;
+        }
+        
          }
-         
-         
-         
-         
-         
-         //0 = 48 dec
-         
-         
-         
-         
+    
     }
-}
-
